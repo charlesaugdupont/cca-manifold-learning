@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set job requirements
-#SBATCH -t 06:00:00
+#SBATCH -t 05:00:00
 #SBATCH -p normal
 
 #SBATCH --nodes=1

@@ -1,6 +1,6 @@
 from data_sim_module_lean import get_curve_samples, get_questionnaires, \
                             	 get_true_mds, align_pca_mds, corr_between_coords, \
-								 multi_partite_distance
+								 multi_partite_distance, compute_mds, get_pca
 
 import pandas as pd
 import numpy as np
@@ -53,13 +53,13 @@ if __name__ == '__main__':
 	p  = 1
 	lr = 50
 
+	best_KLs    = None
 	best_corr   = -10
 	best_coords = None
-	best_KLs    = None
+	best_df 	= None
 
 	for iteration in range(30):
-		probs = get_curve_samples(number_q=number_q, number_a=number_a, 
-								  samples=num_samples, m=m, sin_angle=k-1)
+		probs = get_curve_samples(number_q=number_q, number_a=number_a, samples=num_samples, m=m, sin_angle=k-1)
 		KLs = multi_partite_distance(probs, Nq=number_q, Na=number_a)
 		df = get_questionnaires(probs, count_answers=num_responses, number_q=number_q, number_a=number_a)
 		true_mds = get_true_mds(probs)
@@ -67,15 +67,17 @@ if __name__ == '__main__':
 		tsne = tsne_alg(df, df.columns.drop("name_1"), dim=dim, perplexity=p, learning_rate=lr)
 		tsne = align_pca_mds(true_mds, tsne)
 		tsne_corr = corr_between_coords(true_mds, tsne)
+
 		if tsne_corr > best_corr:
-			print(tsne_corr)
 			best_corr = tsne_corr
 			best_coords = (tsne, true_mds)
 			best_KLs = KLs
+			best_df = df
 			if best_corr >= 0.93:
 				break
 
 	# save results
 	with open(output_dir + f"/{param_index}.pickle", "wb") as f:
-		pickle.dump({"corr":best_corr, "true_coords":best_coords[1], 
-					 "tsne_coords":best_coords[0], "KLs":best_KLs}, f)
+		pickle.dump({"true_coords":best_coords[1], "KLs":best_KLs,
+					 "tsne_coords":best_coords[0], "corr":best_corr,
+					 "df":best_df}, f)

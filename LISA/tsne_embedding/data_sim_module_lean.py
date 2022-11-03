@@ -23,6 +23,11 @@ from numpy import cos, linspace, ones, pi, sin, zeros
 from scipy.spatial.distance import pdist
 from sklearn.manifold import MDS
 
+from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.decomposition import PCA
+
+
+
 """
 Simulate data for sparse FINE
 -----------------------------
@@ -85,7 +90,7 @@ def multi_partite_distance(probs, Nq, Na):
             marg = 1
             for q, j in enumerate(ans_dict[i]):
                 marg *= marginals[(q, j)]
-            if marg == 0 and s[i] == 0:
+            if marg == 0 or s[i] == 0:
                 pass
             else:
                 KL += s[i] * np.log2(s[i] / marg)
@@ -608,3 +613,78 @@ def align_pca_mds(pca, mds):
 
     d, mds_new, tform = procrustes(pca, mds)
     return mds_new
+
+
+def get_pca(df, columns, dim=2, align=True, permute=False, onehot=True):
+    """ Computes a PCA from the given DataFrame and columns. Returns a list of
+        Subak coordinates and list of Subak labels, similar to get_mds.
+        The coordinates of each Subak are computed as the "mean individual",
+        i.e. the Subak as a whole resides at the barycentric point of all
+        farmers from this Subak.    
+    Args:
+        df (DataFrame): The data (unstandardized)
+        columns (list): A list of column names to use for the PCA. (Must be
+                        more than one!)
+    Kwargs:
+        dim (int): Number of principal components to calculate
+        align(Bool): Should the coordinates be rotated and aligned for Betuas?
+    """
+    assert isinstance(df, pd.DataFrame)
+    assert len(columns) > 1
+
+    if permute:
+        df.name_1 = np.random.permutation(df.name_1)
+
+    if onehot:
+        data_normed = OneHotEncoder(sparse=False).fit_transform(df[columns])
+    else:
+        data_normed = StandardScaler().fit_transform(df[columns])
+    pca = PCA(n_components=dim).fit_transform(data_normed)
+    subaks = sorted(df.name_1.unique())
+    pca_coords = np.zeros(shape=(len(subaks), dim))
+    for i, s in enumerate(subaks):
+        # Compute the position of the Subak in the PCA space
+        ind = df[df.name_1 == s].index
+        pca_coords[i,:] = np.mean(pca[ind], axis=0)
+
+    if align:
+        pca_coords = align_coords(pca_coords)
+    return pca_coords, subaks
+
+
+def align_coords(coords):
+    """ Rotates and reflects the coordinate system such that:
+        1. Betuas, Keramas appears on the negative x-axis.
+        2. Selukat is in the positive y-axis.
+    """
+    if coords.shape[1] == 1:
+        return coords
+
+    if coords.shape[0] < 13:
+        return coords
+    angle = -np.arctan(coords[2][1]/coords[2][0])
+    new_coords = rotate_coords(coords, angle)
+    if new_coords[2][0] > 0:
+        new_coords = rotate_coords(coords, angle+np.pi)
+
+    if new_coords[13][1] < 0:
+        new_coords[:,1] = -new_coords[:,1]
+    
+    return new_coords
+
+
+def rotate_coords(coords, angle=0):
+    """ Rotates a list of coordinate pairs by a common angle.
+        Args:
+            coords: 2d numpy array of coordinates, result of MDS.fit_transform
+        Kwargs:
+            angle (default=0): Angle (in radians) to rotate the coordinates
+        Returns: the transformed coordinates
+    """
+    if coords.shape[1] == 2:
+        rot_mat = np.array([[np.cos(angle), np.sin(angle)],[-np.sin(angle), np.cos(angle)]])
+    # elif coords.shape[1] == 3:
+        # rot_mat = np.array([[np.cos(angle), np.sin(angle), 0],[-np.sin(angle), np.cos(angle), 0], [0, 0, 1]])
+    else:
+        return coords
+    return coords.dot(rot_mat)
