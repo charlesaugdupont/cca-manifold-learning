@@ -1743,7 +1743,7 @@ def multi_partite_distance(probs, Nq=3, Na=3):
             marg = 1
             for q, j in enumerate(ans_dict[i]):
                 marg *= marginals[(q, j)]
-            if marg == 0 and s[i] == 0:
+            if marg == 0 or s[i] == 0:
                 pass
             else:
                 KL += s[i] * np.log2(s[i] / marg)
