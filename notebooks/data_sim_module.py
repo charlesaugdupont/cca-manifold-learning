@@ -811,7 +811,7 @@ def get_ans_dict(number_q=3, number_a=3):
         res[i] = ans
     return res
 
-def get_questionnaires(probs, number_q=3, number_a=3, count_answers=25):
+def get_questionnaires(probs, Nq, Na, count_answers):
     """ Produces a dataframe with simulated questionnaires, one for each
     probability distribution ("Subak")
 
@@ -826,14 +826,14 @@ def get_questionnaires(probs, number_q=3, number_a=3, count_answers=25):
     """
     q = []
     for i in range(probs.shape[0]):
-        ans = draw_questions(probs[i], count=count_answers, number_q=number_q,
-                number_a=number_a)
+        ans = draw_questions(probs[i], count=count_answers, number_q=Nq,
+                number_a=Na)
         for a in ans:
             a.insert(0, i + 1)
             q.append(a)
 
     columns = ['name_1']
-    for i in range(number_q):
+    for i in range(Nq):
         columns.append("%s_%d" % (chr(ord("A")+i), i+2))
 
     q = pd.DataFrame(q, columns=columns)
@@ -1709,7 +1709,7 @@ def plot_pca_fi():
     print("showing plot")
     plt.show()
 
-def multi_partite_distance(probs, Nq=3, Na=3):
+def multi_partite_distance(probs, Nq, Na):
     """ Computes the Kullback-Leibler divergence between the joint PDF as
     represented by probs and the marginal distribution for each of these
     joints. This distance is also called the Multi-partite information.
