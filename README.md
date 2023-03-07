@@ -6,7 +6,8 @@ This repository accompanies the paper entitled **"Manifold Analysis for High-Dim
 
 In addition to the paper itself, it includes a *Supporting Information* document, as well as all code used for any analysis and figures presented in the paper.
 
-The data used can be found here: https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/27883.
+The data used can be found here: 
+https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/27883.
 
 ## Development
 
