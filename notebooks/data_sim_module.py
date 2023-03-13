@@ -12,16 +12,9 @@ to create a single module of all data simulation related algorithms.
 """
 
 
-
 # Standard imports for simulate_data
 import numpy as np
 import pandas as pd
-#import seaborn as sns
-#import matplotlib.pyplot as plt
-
-import simplejson
-
-#from fine import *
 
 # Imports for hypersphere.py
 import pickle
@@ -32,7 +25,6 @@ from itertools import combinations, product
 from pprint import pprint
 
 import matplotlib as mpl
-import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 from numpy import array, cos, linspace, ones, pi, sin, zeros
@@ -49,7 +41,7 @@ from sklearn.preprocessing import OneHotEncoder
 
 
 import multiprocess
-#from helpers import get_pca
+import simplejson
 import mca
 
 
@@ -1853,11 +1845,3 @@ if __name__ == "__main__":
         plt.scatter(theor_mds[:,0], theor_mds[:,1], c=KLs, s=100)
         plt.colorbar()
         plt.show()
-
-
-    # plot_fi_pca_vs_resp()
-    # plot_fi_pca_vs_samples()
-
-    # print(get_curved_fisher_distance(0.2, 0.3, 2, 3))
-
-    # get_curved_mds()
