@@ -16,18 +16,19 @@ This repository is under active development with the goal of providing re-usable
 ## Installation
 
 1) Begin by cloning the repository and navigating to it:
-`git clone git@github.com:charlesaugdupont/cca-manifold-learning.git`
-`cd cca-manifold-learning`
+
+    `git clone git@github.com:charlesaugdupont/cca-manifold-learning.git`
+
+    `cd cca-manifold-learning`
 
 2) Next, we recommend creating a virtual environment using
-`python3 -m venv new_environment`
+
+    `python3 -m venv new_environment`
 
 3) The environment can be activated with
-`source new_environment/bin/activate`
+
+    `source new_environment/bin/activate`
 
 4) Required packages can then be installed with
-`pip3 install -r requirements.txt`
 
-5) Lastly, the quafing package also needs to be installed:
-`cd quafing`
-`python3 -m pip install .`
+    `pip3 install -r requirements.txt`
