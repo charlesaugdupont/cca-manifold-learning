@@ -33,3 +33,6 @@ This repository is under active development with the goal of providing re-usable
 4) Required packages can then be installed with
 
     `pip3 install -r requirements.txt`
+    
+## References
+A significant portion of the code use in this repository stems from [quafing](https://zenodo.org/record/7847645#.ZEDv7exBzDI).
